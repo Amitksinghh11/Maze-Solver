@@ -7,7 +7,6 @@ clock = pygame.time.Clock()
 fps = 60
 
 # constants 
-# 28 * 18
 screen_width = 980
 screen_height = 635
 player_size = 30
