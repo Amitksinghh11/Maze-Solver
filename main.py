@@ -254,12 +254,15 @@ while run:
             run = False
     else:
         m.draw()
+        # game still running
         if game_over == 0:
             enemy_group.update()
+        # game over
         elif game_over == -1:
             if restart_button.draw():
                 p.restart(40,40)
                 game_over = 0
+        # game completed
         elif game_over == 1:
             screen.blit(reached_img, (screen_width // 2 , screen_height // 2 - 200))
             if restart_button.draw():
