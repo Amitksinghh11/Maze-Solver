@@ -1,4 +1,5 @@
 import pygame
+import pickle
 
 pygame.init()
 
@@ -23,6 +24,10 @@ pygame.display.set_caption("Maze Solver")
 
 # loading restart image
 restart_img = pygame.image.load("restart.png")
+
+# reached goal image
+r_img = pygame.image.load("fireworks.png")
+reached_img = pygame.transform.scale(r_img,(100,100))
 
 # loading start image
 s_img = pygame.image.load("start.png")
@@ -98,6 +103,9 @@ class Player():
             #collision with enemy
             if pygame.sprite.spritecollide(self, enemy_group, False):
                 game_over = -1
+
+            if pygame.sprite.spritecollide(self, goal_group, False):
+                game_over = 1
                 
             self.rect.x += dx
             self.rect.y += dy
@@ -141,7 +149,14 @@ class Enemies(pygame.sprite.Sprite):
             self.move_direction *= -1
             self.move_counter = 0
 
-
+class Goal(pygame.sprite.Sprite):
+    def __init__(self, x, y):
+        pygame.sprite.Sprite.__init__(self)
+        self.img = pygame.image.load("goal.png")
+        self.image = pygame.transform.scale(self.img,(goal_size, goal_size))
+        self.rect = self.image.get_rect()
+        self.rect.x = x
+        self.rect.y = y
 
 class Maze():
     def __init__(self, level, enemy_group):
@@ -153,8 +168,6 @@ class Maze():
         #load image of walls
         wall_img = pygame.image.load("brickwall.png")
 
-        # load image of goal
-        goal_img = pygame.image.load("goal.png")
         row_count = 0
 
         for row in level:
@@ -170,12 +183,8 @@ class Maze():
                     self.wall_list.append(wall)   
                 # checking for goal             
                 elif contents == 2:
-                    g_img = pygame.transform.scale(goal_img,(goal_size, goal_size))
-                    g_rect = g_img.get_rect()
-                    g_rect.x = col_count * goal_size
-                    g_rect.y = row_count * goal_size
-                    goal = (g_img, g_rect)
-                    self.goal_list.append(goal)
+                    goal = Goal(col_count * wall_size, row_count * wall_size)
+                    goal_group.add(goal)
                 
                 # checking for enemies
                 elif contents == 3:
@@ -220,6 +229,7 @@ maze_level = [
 
 # calling instances of the classes
 enemy_group = pygame.sprite.Group()
+goal_group = pygame.sprite.Group()
 m = Maze(maze_level, enemy_group)
 p = Player(36, 35)
 restart_button = Button(screen_width // 2 - 50, screen_height // 2 - 40 , restart_img)
@@ -250,7 +260,13 @@ while run:
             if restart_button.draw():
                 p.restart(40,40)
                 game_over = 0
+        elif game_over == 1:
+            screen.blit(reached_img, (screen_width // 2 , screen_height // 2 - 200))
+            if restart_button.draw():
+                p.restart(40,40)
+                game_over = 0
         enemy_group.draw(screen)
+        goal_group.draw(screen)
         game_over = p.update(game_over)
 
     # Looping for exit event
