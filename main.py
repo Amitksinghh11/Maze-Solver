@@ -9,7 +9,7 @@ fps = 60
 
 # constants 
 screen_width = 980
-screen_height = 635
+screen_height = 630
 player_size = 30
 wall_size = 35
 goal_size = 35
@@ -135,7 +135,7 @@ class Player():
 class Enemies(pygame.sprite.Sprite):
     def __init__(self, x, y):
         pygame.sprite.Sprite.__init__(self)
-        self.image = pygame.image.load("enemy.png")
+        self.image = pygame.image.load("tile1.png")
         self.rect = self.image.get_rect()
         self.rect.x = x
         self.rect.y = y
@@ -152,7 +152,7 @@ class Enemies(pygame.sprite.Sprite):
 class Goal(pygame.sprite.Sprite):
     def __init__(self, x, y):
         pygame.sprite.Sprite.__init__(self)
-        self.img = pygame.image.load("goal.png")
+        self.img = pygame.image.load("tile2.png")
         self.image = pygame.transform.scale(self.img,(goal_size, goal_size))
         self.rect = self.image.get_rect()
         self.rect.x = x
@@ -166,7 +166,7 @@ class Maze():
         self.level = level
 
         #load image of walls
-        wall_img = pygame.image.load("brickwall.png")
+        wall_img = pygame.image.load("tile0.png")
 
         row_count = 0
 
@@ -174,7 +174,7 @@ class Maze():
             col_count = 0
             for contents in row:
                 # checking for walls
-                if contents == 1:
+                if contents == 0:
                     w_img = pygame.transform.scale(wall_img, (wall_size, wall_size))
                     w_rect = w_img.get_rect()
                     w_rect.x = col_count * wall_size
@@ -187,7 +187,7 @@ class Maze():
                     goal_group.add(goal)
                 
                 # checking for enemies
-                elif contents == 3:
+                elif contents == 1:
                     enemy = Enemies(col_count * wall_size, row_count * wall_size)
                     enemy_group.add(enemy)
 
@@ -206,32 +206,16 @@ class Maze():
 
 
 # Maze list
-maze_level = [
-[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
-[1,0,0,0,1,1,0,0,0,0,0,0,0,0,1,0,0,1,1,0,0,0,0,0,0,0,1,1],
-[1,0,1,0,1,0,1,1,1,0,1,1,1,0,0,0,0,0,0,0,1,0,1,0,1,0,1,1],
-[1,0,1,0,1,0,1,1,1,1,1,0,1,0,1,1,0,1,1,1,0,0,0,0,1,0,1,1],
-[1,0,1,3,0,0,0,0,0,1,1,0,0,0,1,1,1,0,0,0,1,0,0,1,1,1,1,1],
-[1,0,1,1,0,1,3,0,0,0,0,0,1,0,1,1,0,1,1,0,1,0,1,1,1,1,0,1],
-[1,0,1,0,0,1,0,1,0,1,0,1,0,0,1,0,0,0,1,0,1,0,0,0,1,0,0,1],
-[1,0,0,1,0,1,0,0,0,0,1,1,0,1,1,1,1,0,1,0,1,1,1,0,1,1,0,1],
-[1,1,0,1,0,1,1,1,1,0,1,0,0,0,0,0,0,0,1,0,1,1,1,0,1,1,0,1],
-[1,1,3,0,0,0,0,0,1,0,1,0,1,1,0,1,1,1,1,0,0,1,0,0,0,0,0,1],
-[1,0,0,0,1,0,1,1,0,0,0,0,1,0,0,0,0,1,1,0,1,0,1,0,1,0,1,1],
-[1,1,0,1,0,1,1,0,1,1,1,1,1,1,0,1,1,0,1,1,0,1,0,1,0,0,1,1],
-[1,1,0,0,0,1,1,0,0,0,0,1,1,1,0,1,1,0,1,1,1,1,0,1,1,0,1,1],
-[1,0,1,1,0,0,0,1,0,1,0,0,0,0,0,1,1,0,0,0,1,1,0,1,1,0,2,1],
-[1,0,0,1,0,1,0,0,0,1,1,1,0,1,1,0,1,0,1,0,0,0,0,0,0,0,1,1],
-[1,1,0,1,1,0,1,0,0,0,0,0,0,1,1,0,1,0,1,0,1,1,1,1,1,0,0,1],
-[1,1,0,0,0,0,0,0,1,1,0,1,0,1,1,0,0,0,1,0,0,1,1,0,0,1,0,1],
-[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]
-]
+pickle_in = open(f"level0_data", "rb")
+maze_level = pickle.load(pickle_in)
 
 # calling instances of the classes
 enemy_group = pygame.sprite.Group()
 goal_group = pygame.sprite.Group()
 m = Maze(maze_level, enemy_group)
 p = Player(36, 35)
+
+# creating buttons
 restart_button = Button(screen_width // 2 - 50, screen_height // 2 - 40 , restart_img)
 start_button = Button(screen_width//2 - 40, screen_height//2 - 150, start_img)
 exit_button = Button(screen_width // 2 - 40, screen_height //2  ,exit_img)
@@ -276,10 +260,9 @@ while run:
     for events in pygame.event.get():
         if events.type == pygame.QUIT:
             run = False
-            pygame.quit()
             
     pygame.display.update()
-
+pygame.quit()
 
 
 
